@@ -1,0 +1,3 @@
+"""
+Entity Consolidation & Precedence Package
+"""

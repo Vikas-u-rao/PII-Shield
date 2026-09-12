@@ -1,0 +1,17 @@
+version_tag: "v1.0.0"
+description: "Default India-aware strict PII policy (deny-by-default on unlisted entities)"
+default_action: "BLOCK"
+
+entity_rules:
+  AADHAAR: "MASK"
+  PAN: "MASK"
+  PASSPORT_IN: "BLOCK"
+  VOTER_ID: "MASK"
+  DRIVING_LICENSE: "MASK"
+  PHONE_NUMBER: "PSEUDONYMIZE"
+  EMAIL_ADDRESS: "PSEUDONYMIZE"
+  PERSON: "PSEUDONYMIZE"
+  LOCATION: "ALLOW"
+  ORGANIZATION: "ALLOW"
+  IP_ADDRESS: "MASK"
+  CREDIT_CARD: "BLOCK"

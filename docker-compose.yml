@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: piishield_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: piishield_user
+      POSTGRES_PASSWORD: piishield_password
+      POSTGRES_DB: piishield_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U piishield_user -d piishield_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: piishield_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://piishield_user:piishield_password@postgres:5432/piishield_db
+      JWT_SECRET: dev-insecure-jwt-secret-for-scaffolding
+      PSEUDONYM_ENCRYPTION_KEY: dev-insecure-encryption-key-placeholder
+      ENVIRONMENT: development
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: piishield_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
